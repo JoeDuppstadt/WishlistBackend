@@ -4,8 +4,9 @@ import re
 from classes.f21.f21Class import Root
 from classes.f21.f21DetailsClass import RootDetails
 from helpers.fileio import readItemsOutput, saveDetailsOutput, readDetailsOutput
-
-
+import pymysql
+from dotenv import load_dotenv
+import os
 def getProductDetails(PID):
     url = "https://apidojo-forever21-v1.p.rapidapi.com/products/v2/detail"
     querystring = {"productId": PID}
@@ -43,6 +44,22 @@ def orderImages(imageList):
     return ordered_list
 
 
+def connectDB():
+    load_dotenv()
+    user = os.getenv("WishlistUser")
+    password = os.getenv("WishlistDBPass")
+    host = os.getenv("WishlistDBHost")
+    print(password)
+
+    conn = pymysql.connect(
+        host=host,
+        user=user,
+        password=password,
+        db='Wishlist',
+    )
+    return conn
+
+conn = connectDB()
 # Example Usage
 jsonstring = json.loads(readItemsOutput())
 root = Root.from_dict(jsonstring)
@@ -104,3 +121,10 @@ try:
     print(image6url)
 except:
     print("No Image 6")
+
+
+
+cur = conn.cursor()
+cur.execute("select @@version")
+output = cur.fetchall()
+print(output)
