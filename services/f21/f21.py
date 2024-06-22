@@ -64,12 +64,13 @@ conn = connectDB()
 jsonstring = json.loads(readItemsOutput())
 root = Root.from_dict(jsonstring)
 
-PID = root.response.docs[0].pid
 
 title = root.response.docs[0].title
 price = root.response.docs[0].sale_price
 url = root.response.docs[0].url
 brand = 'Forever21'
+contentRating = None
+PID = root.response.docs[0].pid + '||' + brand
 
 jsonDetailsString = json.loads(readDetailsOutput())
 rootDetails = RootDetails.from_dict(jsonDetailsString)
@@ -122,9 +123,7 @@ try:
 except:
     print("No Image 6")
 
-
-
 cur = conn.cursor()
-cur.execute("select @@version")
-output = cur.fetchall()
-print(output)
+cur.execute('insert into Wishlist.ItemMaster(PID, Title, Description, Brand, ContentRating, URL) values(%s,%s,%s,%s,%s,%s);', (PID,title,description,brand,contentRating,url,))
+conn.commit()
+#print(output)
