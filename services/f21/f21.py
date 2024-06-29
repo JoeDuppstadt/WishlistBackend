@@ -1,12 +1,13 @@
 import json
+import time
 import requests
 import re
 from classes.f21.f21Class import Root
 from classes.f21.f21DetailsClass import RootDetails
-from helpers.fileio import readItemsOutput, saveDetailsOutput, readDetailsOutput
-import pymysql
-from dotenv import load_dotenv
-import os
+from helpers.fileio import readItemsOutput, saveItemsOutput
+from services.DBManager import connectDB, insertIntoItemMaster, insertIntoItemAssets, insertIntoItemPricing
+
+
 def getProductDetails(PID):
     url = "https://apidojo-forever21-v1.p.rapidapi.com/products/v2/detail"
     querystring = {"productId": PID}
@@ -15,12 +16,12 @@ def getProductDetails(PID):
         "X-RapidAPI-Host": "apidojo-forever21-v1.p.rapidapi.com"
     }
     response = requests.get(url, headers=headers, params=querystring)
-    return str(response.json())
+    return str(response.text)
 
 
 def getProducts():
     url = "https://apidojo-forever21-v1.p.rapidapi.com/products/search"
-    querystring = {"query": "jackets", "rows": "3", "start": "0", "color_groups": "black"}
+    querystring = {"query": "jackets", "rows": "1", "start": "0", "color_groups": "black"}
     headers = {
         "X-RapidAPI-Key": "c24a2be811msh82c950a50f6cd83p1409a8jsn127d7ba7941a",
         "X-RapidAPI-Host": "apidojo-forever21-v1.p.rapidapi.com"
@@ -44,35 +45,28 @@ def orderImages(imageList):
     return ordered_list
 
 
-def connectDB():
-    load_dotenv()
-    user = os.getenv("WishlistUser")
-    password = os.getenv("WishlistDBPass")
-    host = os.getenv("WishlistDBHost")
-    print(password)
 
-    conn = pymysql.connect(
-        host=host,
-        user=user,
-        password=password,
-        db='Wishlist',
-    )
-    return conn
 
-conn = connectDB()
-# Example Usage
+
+# saveItemsOutput(getProducts())
+
 jsonstring = json.loads(readItemsOutput())
 root = Root.from_dict(jsonstring)
 
-
+conn = connectDB()
 title = root.response.docs[0].title
 price = root.response.docs[0].sale_price
 url = root.response.docs[0].url
 brand = 'Forever21'
 contentRating = None
-PID = root.response.docs[0].pid + '||' + brand
-
-jsonDetailsString = json.loads(readDetailsOutput())
+PID = root.response.docs[0].pid
+DBPKEY = root.response.docs[0].pid + '||' + brand
+print(title)
+print(price)
+print(PID)
+print(url)
+time.sleep(0.1)
+jsonDetailsString = json.loads(getProductDetails(PID))
 rootDetails = RootDetails.from_dict(jsonDetailsString)
 
 description = removeHTMLTags(rootDetails.product.Description)
@@ -122,8 +116,7 @@ try:
     print(image6url)
 except:
     print("No Image 6")
-
-cur = conn.cursor()
-cur.execute('insert into Wishlist.ItemMaster(PID, Title, Description, Brand, ContentRating, URL) values(%s,%s,%s,%s,%s,%s);', (PID,title,description,brand,contentRating,url,))
-conn.commit()
-#print(output)
+time.sleep(1)
+insertIntoItemMaster(conn, DBPKEY, title, description, brand, contentRating, url)
+insertIntoItemAssets(conn, DBPKEY, image1url, image2url, image3url, image4url, image5url, image6url)
+insertIntoItemPricing(conn, DBPKEY, price)
