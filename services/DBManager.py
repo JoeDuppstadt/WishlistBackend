@@ -15,6 +15,7 @@ def connectDB():
         user=user,
         password=password,
         db='Wishlist',
+        cursorclass=pymysql.cursors.DictCursor
     )
     return conn
 
@@ -37,6 +38,16 @@ def insertIntoItemPricing(conn, DBPKEY, price):
     time.sleep(0.1)
     cur = conn.cursor()
     cur.execute(
-        'insert into Wishlist.ItemPricing(PID, Price) values(%s,%s);',
+        'insert into Wishlist.ItemPricing(PID,  Price) values(%s,%s);',
         (DBPKEY, price,))
     conn.commit()
+
+def searchBeforeCreate(conn, DBPKEY):
+    time.sleep(0.1)
+    cur = conn.cursor()
+    cur.execute("select count(*) as cnt from ItemMaster where PID = '%s'" % DBPKEY)
+    time.sleep(0.25)
+    result = cur.fetchone()
+    if result['cnt'] == 1:
+        return True
+    return False

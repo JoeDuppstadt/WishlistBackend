@@ -5,7 +5,8 @@ import re
 from classes.f21.f21Class import Root
 from classes.f21.f21DetailsClass import RootDetails
 from helpers.fileio import readItemsOutput, saveItemsOutput
-from services.DBManager import connectDB, insertIntoItemMaster, insertIntoItemAssets, insertIntoItemPricing
+from services.DBManager import connectDB, searchBeforeCreate, insertIntoItemMaster, insertIntoItemAssets, \
+    insertIntoItemPricing
 
 
 def getProductDetails(PID):
@@ -66,57 +67,63 @@ print(price)
 print(PID)
 print(url)
 time.sleep(0.1)
-jsonDetailsString = json.loads(getProductDetails(PID))
-rootDetails = RootDetails.from_dict(jsonDetailsString)
 
-description = removeHTMLTags(rootDetails.product.Description)
-image1url = rootDetails.product.DefaultProductImage
+#check to see if item already exists in ItemMaster
+if not searchBeforeCreate(conn, DBPKEY):
+    print(PID + ' does not exist in ItemMaster')
+    #Get Product Details
+    jsonDetailsString = json.loads(getProductDetails(PID))
+    rootDetails = RootDetails.from_dict(jsonDetailsString)
 
-image1url = None
-image2url = None
-image3url = None
-image4url = None
-image5url = None
-image6url = None
+    description = removeHTMLTags(rootDetails.product.Description)
 
-product_images = orderImages(rootDetails.product.Variants[0].ProductImages[0])
-try:
-    if product_images[0] is not None:
-        image1url = product_images[0]
-    print(image1url)
-except:
-    print("No Image 1")
-try:
-    if product_images[1] is not None:
-        image2url = product_images[1]
-    print(image2url)
-except:
-    print("No Image 2")
-try:
-    if product_images[2] is not None:
-        image3url = product_images[3]
-    print(image3url)
-except:
-    print("No Image 3")
-try:
-    if product_images[3] is not None:
-        image4url = product_images[4]
-    print(image4url)
-except:
-    print("No Image 4")
-try:
-    if product_images[4] is not None:
-        image5url = product_images[5]
-    print(image5url)
-except:
-    print("No Image 5")
-try:
-    if product_images[5] is not None:
-        image6url = product_images[6]
-    print(image6url)
-except:
-    print("No Image 6")
-time.sleep(1)
-insertIntoItemMaster(conn, DBPKEY, title, description, brand, contentRating, url)
-insertIntoItemAssets(conn, DBPKEY, image1url, image2url, image3url, image4url, image5url, image6url)
-insertIntoItemPricing(conn, DBPKEY, price)
+    image1url = None
+    image2url = None
+    image3url = None
+    image4url = None
+    image5url = None
+    image6url = None
+
+    product_images = orderImages(rootDetails.product.Variants[0].ProductImages[0])
+    try:
+        if product_images[0] is not None:
+            image1url = product_images[0]
+        print(image1url)
+    except:
+        print("No Image 1")
+    try:
+        if product_images[1] is not None:
+            image2url = product_images[1]
+        print(image2url)
+    except:
+        print("No Image 2")
+    try:
+        if product_images[2] is not None:
+            image3url = product_images[3]
+        print(image3url)
+    except:
+        print("No Image 3")
+    try:
+        if product_images[3] is not None:
+            image4url = product_images[4]
+        print(image4url)
+    except:
+        print("No Image 4")
+    try:
+        if product_images[4] is not None:
+            image5url = product_images[5]
+        print(image5url)
+    except:
+        print("No Image 5")
+    try:
+        if product_images[5] is not None:
+            image6url = product_images[6]
+        print(image6url)
+    except:
+        print("No Image 6")
+    time.sleep(1)
+    insertIntoItemMaster(conn, DBPKEY, title, description, brand, contentRating, url)
+    insertIntoItemAssets(conn, DBPKEY, image1url, image2url, image3url, image4url, image5url, image6url)
+    insertIntoItemPricing(conn, DBPKEY, price)
+else:
+    print(PID + ' already exists in ItemMaster')
