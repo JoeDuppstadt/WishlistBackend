@@ -4,6 +4,7 @@ import pymysql
 from dotenv import load_dotenv
 import os
 
+
 def connectDB():
     load_dotenv()
     user = os.getenv("WishlistUser")
@@ -19,6 +20,7 @@ def connectDB():
     )
     return conn
 
+
 def insertIntoItemMaster(conn, DBPKEY, title, description, brand, contentRating, url):
     time.sleep(0.1)
     cur = conn.cursor()
@@ -27,6 +29,7 @@ def insertIntoItemMaster(conn, DBPKEY, title, description, brand, contentRating,
         (DBPKEY, title, description, brand, contentRating, url, datetime.datetime.now(),))
     conn.commit()
 
+
 def insertIntoItemAssets(conn, DBPKEY, image1, image2, image3, image4, image5, image6):
     time.sleep(0.1)
     cur = conn.cursor()
@@ -34,6 +37,8 @@ def insertIntoItemAssets(conn, DBPKEY, image1, image2, image3, image4, image5, i
         'insert into Wishlist.ItemAssets(PID, ImageURL1, ImageURL2, ImageURL3, ImageURL4, ImageURL5, ImageURL6) values(%s,%s,%s,%s,%s,%s,%s);',
         (DBPKEY, image1, image2, image3, image4, image5, image6,))
     conn.commit()
+
+
 def insertIntoItemPricing(conn, DBPKEY, price):
     time.sleep(0.1)
     cur = conn.cursor()
@@ -41,6 +46,7 @@ def insertIntoItemPricing(conn, DBPKEY, price):
         'insert into Wishlist.ItemPricing(PID,  Price) values(%s,%s);',
         (DBPKEY, price,))
     conn.commit()
+
 
 def searchBeforeCreate(conn, DBPKEY):
     time.sleep(0.1)
@@ -51,3 +57,25 @@ def searchBeforeCreate(conn, DBPKEY):
     if result['cnt'] == 1:
         return True
     return False
+
+
+def returnAllItems(conn):
+    cur = conn.cursor()
+    cur.execute("select * from Wishlist.ItemMaster im inner  join Wishlist.ItemAssets ia on im.PID = ia.PID inner "
+                "join Wishlist.ItemPricing ip on im.PID = ip.PID ")
+    result = cur.fetchall()
+    print(result)
+
+
+def checkStatus(conn):
+    cur = conn.cursor()
+    cur.execute("select PID, URL from Wishlist.ItemMaster where StatusCode  = '404'")
+    result = cur.fetchall()
+    return result
+
+def setStatusCode(conn, PID, STATUSCODE):
+    cur = conn.cursor()
+    cur.execute(
+        'UPDATE Wishlist.ItemMaster SET StatusCode = %s WHERE PID = %s;',
+        (STATUSCODE, PID))
+    conn.commit()
