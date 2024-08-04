@@ -12,14 +12,16 @@ conn = connectDB()  # create database connection
 
 URLS = checkStatus(conn)  # return URLS
 
-length = len(URLS)
+length = len(URLS)  # create length variable so we can iterate over a list
 
-for i in range(length):
+for i in range(length): # iterate over the of ids
     statusCode = None
-    pid = (URLS[i].get('PID'))
-    url = (URLS[i].get('URL'))
+    pid = (URLS[i].get('PID'))  # grab the pid so set status
+    url = (URLS[i].get('URL'))  # grab url to test
     print(pid)
     print(url)
+
+    # create header to mimic user
     head = {
         'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_6) AppleWebKit/537.36 (KHTML, like Gecko) '
                       'Chrome/99.0.4844.84 Safari/537.36',
@@ -34,10 +36,10 @@ for i in range(length):
     }
 
     try:
-        data = (get_page_content(url, head)).read()
+        data = (get_page_content(url, head)).read() # send http request and read the output
         time.sleep(0.5)
-        statusCode = '200'
+        statusCode = '200'  # if no exception is thrown, the item is active
     except:
-        statusCode = '404'
+        statusCode = '404'  # if an exception is thrown, set the status to not available
 
-    setStatusCode(conn, pid, statusCode)
+    setStatusCode(conn, pid, statusCode) # create a request to set the status in the itemmaster table

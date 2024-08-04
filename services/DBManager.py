@@ -73,6 +73,7 @@ def checkStatus(conn):
     result = cur.fetchall()
     return result
 
+
 def setStatusCode(conn, PID, STATUSCODE):
     cur = conn.cursor()
     cur.execute(

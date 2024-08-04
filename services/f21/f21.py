@@ -20,9 +20,9 @@ def getProductDetails(PID):
     return str(response.text)
 
 
-def getProducts():
+def getProducts(): # change query to find new items here
     url = "https://apidojo-forever21-v1.p.rapidapi.com/products/search"
-    querystring = {"query": "shirts", "rows": "2000", "start": "0"}
+    querystring = {"query": "shorts", "rows": "2000", "start": "0"}
     headers = {
         "X-RapidAPI-Key": "c24a2be811msh82c950a50f6cd83p1409a8jsn127d7ba7941a",
         "X-RapidAPI-Host": "apidojo-forever21-v1.p.rapidapi.com"
