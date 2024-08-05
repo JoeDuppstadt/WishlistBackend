@@ -69,7 +69,7 @@ def returnAllItems(conn):
 
 def checkStatus(conn):
     cur = conn.cursor()
-    cur.execute("select PID, URL from Wishlist.ItemMaster where StatusCode  = '404'")
+    cur.execute("select im.PID, ImageURL1 from Wishlist.ItemMaster im inner join Wishlist.ItemAssets ia on im.PID = ia.PID;")
     result = cur.fetchall()
     return result
 
