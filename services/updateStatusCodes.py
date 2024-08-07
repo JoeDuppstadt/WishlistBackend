@@ -1,5 +1,3 @@
-import time
-from urllib.request import Request, urlopen
 import requests
 from services.DBManager import connectDB, checkStatus, setStatusCode
 
@@ -31,8 +29,25 @@ length = len(URLS)  # create length variable so we can iterate over a list
 for i in range(length):  # iterate over the of ids
     statusCode = None
     pid = (URLS[i].get('PID'))  # grab the pid so set status
-    url = (URLS[i].get('ImageURL1'))  # grab url to test
+    url1 = (URLS[i].get('ImageURL1'))  # grab url to test
+    url2 = (URLS[i].get('ImageURL2'))  # grab url to test
+    url3 = (URLS[i].get('ImageURL3'))  # grab url to test
     print(pid)
-    print(url)
+    print(url1)
 
-    setStatusCode(conn, pid, getStatusCode(url))  # create a request to set the status in the itemmaster table
+    url1StatusCode = getStatusCode(url1)
+    url2StatusCode = getStatusCode(url2)
+    url3StatusCode = getStatusCode(url3)
+    print(url1StatusCode)
+    print(url2StatusCode)
+    print(url3StatusCode)
+    statusCode = None
+
+    if url1StatusCode == 200 and url2StatusCode == 200 and url3StatusCode == 200:
+        statusCode = '200'
+    else:
+        statusCode = '404'
+
+    print(statusCode)
+
+    setStatusCode(conn, pid, statusCode)  # create a request to set the status in the itemmaster table
