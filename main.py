@@ -1,5 +1,6 @@
 
-from services.DBManager import connectDB, returnAllItems
+from services.DBManager import connectDB,  returnAllActiveItems
+
 conn = connectDB()
 
-print(returnAllItems(conn))
+print(returnAllActiveItems(conn))

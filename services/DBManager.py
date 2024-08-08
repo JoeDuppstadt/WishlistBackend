@@ -6,19 +6,23 @@ import os
 
 
 def connectDB():
-    load_dotenv()
-    user = os.getenv("WishlistUser")
-    password = os.getenv("WishlistDBPass")
-    host = os.getenv("WishlistDBHost")
+    try:
+        load_dotenv()
+        user = os.getenv("WishlistUser")
+        password = os.getenv("WishlistDBPass")
+        host = os.getenv("WishlistDBHost")
 
-    conn = pymysql.connect(
-        host=host,
-        user=user,
-        password=password,
-        db='Wishlist',
-        cursorclass=pymysql.cursors.DictCursor
-    )
-    return conn
+        conn = pymysql.connect(
+            host=host,
+            user=user,
+            password=password,
+            db='Wishlist',
+            cursorclass=pymysql.cursors.DictCursor
+        )
+        return conn
+    except:
+        print('Cannot connect to database')
+
 
 
 def insertIntoItemMaster(conn, DBPKEY, title, description, brand, contentRating, url):
@@ -59,13 +63,14 @@ def searchBeforeCreate(conn, DBPKEY):
     return False
 
 
-def returnAllItems(conn):
+def returnAllActiveItems(conn):
     cur = conn.cursor()
-    cur.execute("select * from Wishlist.ItemMaster im inner  join Wishlist.ItemAssets ia on im.PID = ia.PID inner "
-                "join Wishlist.ItemPricing ip on im.PID = ip.PID ")
+    cur.execute("select im.PID, im.Title, im.Description, im.Brand, im.URL, ia.ImageURL1, ia.ImageURL2, ia.ImageURL3, "
+                "ia.ImageURL4, ia.ImageURL5, ia.ImageURL6, ia.ImageURL7, ip.Price from Wishlist.ItemMaster im inner "
+                "join Wishlist.ItemAssets ia on im.PID = ia.PID inner join Wishlist.ItemPricing ip on im.PID = ip.PID "
+                "where StatusCode = '200'")
     result = cur.fetchall()
-    print(result)
-
+    return result
 
 def checkStatus(conn):
     cur = conn.cursor()
