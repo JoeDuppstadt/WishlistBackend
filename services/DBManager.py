@@ -21,7 +21,7 @@ def connectDB():
         )
         return conn
     except:
-        print('Cannot connect to database')
+        raise Exception("Cannot connect to database")
 
 
 
