@@ -1,3 +1,5 @@
+import time
+
 import requests
 from services.DBManager import connectDB, checkStatus, setStatusCode
 
@@ -36,7 +38,9 @@ for i in range(length):  # iterate over the of ids
     print(url1)
 
     url1StatusCode = getStatusCode(url1)
+    time.sleep(0.5)
     url2StatusCode = getStatusCode(url2)
+    time.sleep(0.5)
     url3StatusCode = getStatusCode(url3)
     print(url1StatusCode)
     print(url2StatusCode)
