@@ -1,6 +1,19 @@
+def strStr(haystack, needle):
+    needleIndex = 0
+    i = 0
+    while i < len(haystack):
+        if haystack[i] == needle[needleIndex]:
+            needleIndex = needleIndex + 1
+            i += 1
 
-from services.DBManager import connectDB,  returnAllActiveItems
+        else:
+            i = i - needleIndex + 1
+            needleIndex = 0
 
-conn = connectDB()
 
-print(returnAllActiveItems(conn))
+        if needleIndex == len(needle):
+            return 1000
+    return -1
+
+print(strStr('ississippi', 'issip'))
+
