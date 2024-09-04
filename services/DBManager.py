@@ -66,9 +66,9 @@ def searchBeforeCreate(conn, DBPKEY):
 def returnAllActiveItems(conn):
     cur = conn.cursor()
     cur.execute("select im.PID, im.Title, im.Description, im.Brand, im.URL, ia.ImageURL1, ia.ImageURL2, ia.ImageURL3, "
-                "ia.ImageURL4, ia.ImageURL5, ia.ImageURL6, ia.ImageURL7, ip.Price from Wishlist.ItemMaster im inner "
+                "ia.ImageURL4, ia.ImageURL5, ia.ImageURL6, ia.ImageURL7, ip.Price, im.ContentRating from Wishlist.ItemMaster im inner "
                 "join Wishlist.ItemAssets ia on im.PID = ia.PID inner join Wishlist.ItemPricing ip on im.PID = ip.PID "
-                "where StatusCode = '200'")
+                "where StatusCode = '200' order by RAND() limit 100")
     result = cur.fetchall()
     return result
 
